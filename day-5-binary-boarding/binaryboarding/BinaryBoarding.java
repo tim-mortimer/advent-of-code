@@ -3,6 +3,7 @@ package binaryboarding;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class BinaryBoarding {
 
@@ -18,15 +19,26 @@ public class BinaryBoarding {
         }
 
 
-        Integer maxSeatId = boardingPasses.stream()
+        ArrayList<Integer> sortedSeatIds = (ArrayList<Integer>) boardingPasses.stream()
                 .map(BinaryBoarding::calculateSeatId)
-                .max(Comparator.naturalOrder())
-                .orElse(null);
+                .sorted(Comparator.naturalOrder())
+                .collect(Collectors.toList());
 
-        System.out.println(maxSeatId);
+        System.out.println(sortedSeatIds.get(sortedSeatIds.size() - 1));
+
+        int lastSeatId = sortedSeatIds.get(0);
+
+        for (int i=1; i < sortedSeatIds.size(); i++) {
+            if (sortedSeatIds.get(i) - lastSeatId == 2) {
+                System.out.println(lastSeatId + 1);
+                break;
+            }
+
+            lastSeatId = sortedSeatIds.get(i);
+        }
     }
 
-    public static int calculateSeatId(String boardingPass) {
+    public static Integer calculateSeatId(String boardingPass) {
         Range rowRange = new Range(0, 127);
         Range columnRange = new Range(0, 7);
 
