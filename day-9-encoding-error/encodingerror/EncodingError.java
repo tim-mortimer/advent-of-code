@@ -2,7 +2,9 @@ package encodingerror;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EncodingError {
     public static void main(String[] args) throws IOException {
@@ -11,15 +13,17 @@ public class EncodingError {
         BufferedReader bufferedReader = new BufferedReader(reader);
         String line;
 
-        List<Long> preamble = new ArrayList<>();
+        List<Long> numbers = new ArrayList<>();
 
         while ((line = bufferedReader.readLine()) != null) {
-            preamble.add(Long.parseLong(line));
+            numbers.add(Long.parseLong(line));
         }
 
-        for (int i = 25; i < preamble.size(); i++) {
+        long invalidNumber = -1;
+
+        for (int i = 25; i < numbers.size(); i++) {
             boolean isValid = false;
-            long numberUnderInspection = preamble.get(i);
+            long numberUnderInspection = numbers.get(i);
 
             for (int j = i - 25; j < i; j++) {
                 for (int k = i - 25; k < i; k++) {
@@ -27,7 +31,7 @@ public class EncodingError {
                         continue;
                     }
 
-                    if (preamble.get(j) + preamble.get(k) == numberUnderInspection) {
+                    if (numbers.get(j) + numbers.get(k) == numberUnderInspection) {
                         isValid = true;
                         break;
                     }
@@ -35,8 +39,37 @@ public class EncodingError {
             }
 
             if (!isValid) {
-                System.out.println(numberUnderInspection);
+                invalidNumber = numberUnderInspection;
+                System.out.println(invalidNumber);
                 break;
+            }
+        }
+
+        for (int i = 0; i < numbers.size() - 1; i++) {
+            for (int j = i + 1; j < numbers.size(); j++) {
+                List<Long> contiguousNumbers = new ArrayList<>();
+                long contiguousSum = 0;
+
+                for (int k = i; k < j; k++) {
+                    contiguousNumbers.add(numbers.get(k));
+                    contiguousSum += numbers.get(k);
+                }
+
+                if (contiguousNumbers.size() == 1) {
+                    continue;
+                }
+
+                if (contiguousSum == invalidNumber) {
+                    List<Long> sortedContiguousNumbers = contiguousNumbers.stream()
+                            .sorted(Comparator.naturalOrder())
+                            .collect(Collectors.toList());
+
+                    long minimumContiguousNumber = sortedContiguousNumbers.get(0);
+                    long maximumContiguousNumber = sortedContiguousNumbers.get(sortedContiguousNumbers.size() - 1);
+                    long encryptionWeakness = minimumContiguousNumber + maximumContiguousNumber;
+
+                    System.out.println(encryptionWeakness);
+                }
             }
         }
     }
