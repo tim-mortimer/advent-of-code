@@ -40,5 +40,46 @@ public class AdapterArray {
         int oneJoltageDifferenceCount = joltageDifferences.getOrDefault(1, 0);
         int threeJoltageDifferenceCount = joltageDifferences.getOrDefault(3, 0);
         System.out.println(oneJoltageDifferenceCount * threeJoltageDifferenceCount);
+
+        sortedJoltages.add(0, 0);
+
+        Map<Integer, List<Integer>> possibleSteps = new HashMap<>();
+
+        for (int i = 0; i < sortedJoltages.size(); i++) {
+            int currentJoltage = sortedJoltages.get(i);
+            List<Integer> possibleDestinations = new ArrayList<>();
+
+            for (int j = i + 1; j < i + 4; j++) {
+                if (j > sortedJoltages.size() - 1) {
+                    continue;
+                }
+
+                if (sortedJoltages.get(j) - currentJoltage <= 3) {
+                    possibleDestinations.add(j);
+                }
+            }
+
+            possibleSteps.put(i, possibleDestinations);
+        }
+
+        System.out.println(pathCountFrom(possibleSteps, new HashMap<>(), 0));
+    }
+
+    private static long pathCountFrom(Map<Integer, List<Integer>> possibleSteps, Map<Integer, Long> pathCountCache, int i) {
+        if (pathCountCache.containsKey(i)) {
+            return pathCountCache.get(i);
+        }
+
+        long pathCount = 0;
+
+        List<Integer> possibleDestinations = possibleSteps.get(i);
+
+        for (int possibleDestination : possibleDestinations) {
+            pathCount += pathCountFrom(possibleSteps, pathCountCache, possibleDestination);
+        }
+
+        pathCountCache.put(i, pathCount);
+
+        return Math.max(1, pathCount);
     }
 }
