@@ -24,12 +24,12 @@ public class SeatingArea {
 
             for (int columnNumber = 0; columnNumber < row.size(); columnNumber++) {
                 char occupancy = row.get(columnNumber);
-                int adjacentOccupiedSeatCount = strategy.count(seatingGrid, rowNumber, columnNumber);
+                int occupiedSeatCount = strategy.count(seatingGrid, rowNumber, columnNumber);
                 int peopleTolerance = strategy.peopleTolerance();
 
-                boolean isTolerableOccupiedSeat = row.get(columnNumber) == '#' && adjacentOccupiedSeatCount < peopleTolerance;
-                boolean isUntolerableOccupiedSeat = row.get(columnNumber) == '#' && adjacentOccupiedSeatCount >= peopleTolerance;
-                boolean isUnoccupiedSeatSurroundedByNoOccupiedSeats = occupancy == 'L' && adjacentOccupiedSeatCount == 0;
+                boolean isTolerableOccupiedSeat = row.get(columnNumber) == '#' && occupiedSeatCount < peopleTolerance;
+                boolean isUntolerableOccupiedSeat = row.get(columnNumber) == '#' && occupiedSeatCount >= peopleTolerance;
+                boolean isUnoccupiedSeatSurroundedByNoOccupiedSeats = occupancy == 'L' && occupiedSeatCount == 0;
 
                 if (isTolerableOccupiedSeat) {
                     newRow.add('#');
