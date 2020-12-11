@@ -27,7 +27,7 @@ public class SeatingSystem {
         boolean match = false;
 
         while (!match) {
-            SeatingArea nextSeatingArea = currentSeatingArea.applyRules();
+            SeatingArea nextSeatingArea = currentSeatingArea.applyRules(new AdjacentOccupiedSeatCountingStrategy());
 
             if (nextSeatingArea.equals(currentSeatingArea)) {
                 match = true;

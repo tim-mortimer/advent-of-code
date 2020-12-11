@@ -12,6 +12,10 @@ public class SeatingArea {
     }
 
     public SeatingArea applyRules() {
+        return applyRules(new AdjacentOccupiedSeatCountingStrategy());
+    }
+
+    public SeatingArea applyRules(OccupiedSeatCountingStrategy strategy) {
         List<List<Character>> newSeatingGrid = new ArrayList<>();
 
         for (int i = 0; i < seatingGrid.size(); i++) {
@@ -20,7 +24,7 @@ public class SeatingArea {
 
             for (int j = 0; j < row.size(); j++) {
                 char occupancy = row.get(j);
-                int adjacentOccupiedSeatCount = adjacentOccupiedSeatCount(i, j);
+                int adjacentOccupiedSeatCount = strategy.count(seatingGrid, i, j);
 
                 boolean isUnbotheredOccupiedSeat = row.get(j) == '#' && adjacentOccupiedSeatCount < 4;
                 boolean isBotheredOccupiedSeat = row.get(j) == '#' && adjacentOccupiedSeatCount >= 4;
@@ -41,29 +45,6 @@ public class SeatingArea {
         }
 
         return new SeatingArea(newSeatingGrid);
-    }
-
-    private int adjacentOccupiedSeatCount(int i, int j) {
-        int adjacentOccupiedSeatCount = 0;
-        List<Character> row = seatingGrid.get(i);
-
-        for (int k = i - 1; k < i + 2; k++) {
-            if (k < 0 || k > seatingGrid.size() - 1) {
-                continue;
-            }
-
-            for (int l = j - 1; l < j + 2; l++) {
-                if (l < 0 || l > row.size() - 1 || (k == i && l == j)) {
-                    continue;
-                }
-
-                if (seatingGrid.get(k).get(l) == '#') {
-                    adjacentOccupiedSeatCount++;
-                }
-            }
-        }
-
-        return adjacentOccupiedSeatCount;
     }
 
     @Override
