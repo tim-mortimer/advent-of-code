@@ -18,21 +18,22 @@ public class SeatingArea {
     public SeatingArea applyRules(OccupiedSeatCountingStrategy strategy) {
         List<List<Character>> newSeatingGrid = new ArrayList<>();
 
-        for (int i = 0; i < seatingGrid.size(); i++) {
-            List<Character> row = seatingGrid.get(i);
+        for (int rowNumber = 0; rowNumber < seatingGrid.size(); rowNumber++) {
+            List<Character> row = seatingGrid.get(rowNumber);
             List<Character> newRow = new ArrayList<>();
 
-            for (int j = 0; j < row.size(); j++) {
-                char occupancy = row.get(j);
-                int adjacentOccupiedSeatCount = strategy.count(seatingGrid, i, j);
+            for (int columnNumber = 0; columnNumber < row.size(); columnNumber++) {
+                char occupancy = row.get(columnNumber);
+                int adjacentOccupiedSeatCount = strategy.count(seatingGrid, rowNumber, columnNumber);
+                int peopleTolerance = strategy.peopleTolerance();
 
-                boolean isUnbotheredOccupiedSeat = row.get(j) == '#' && adjacentOccupiedSeatCount < 4;
-                boolean isBotheredOccupiedSeat = row.get(j) == '#' && adjacentOccupiedSeatCount >= 4;
+                boolean isTolerableOccupiedSeat = row.get(columnNumber) == '#' && adjacentOccupiedSeatCount < peopleTolerance;
+                boolean isUntolerableOccupiedSeat = row.get(columnNumber) == '#' && adjacentOccupiedSeatCount >= peopleTolerance;
                 boolean isUnoccupiedSeatSurroundedByNoOccupiedSeats = occupancy == 'L' && adjacentOccupiedSeatCount == 0;
 
-                if (isUnbotheredOccupiedSeat) {
+                if (isTolerableOccupiedSeat) {
                     newRow.add('#');
-                } else if (isBotheredOccupiedSeat) {
+                } else if (isUntolerableOccupiedSeat) {
                     newRow.add('L');
                 } else if (isUnoccupiedSeatSurroundedByNoOccupiedSeats) {
                     newRow.add('#');

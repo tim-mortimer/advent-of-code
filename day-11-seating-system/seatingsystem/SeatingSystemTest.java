@@ -200,4 +200,67 @@ public class SeatingSystemTest {
                 List.of('#', '#', '#')
         ));
     }
+
+    @Test
+    public void a_vacant_seat_with_no_visible_occupied_seats_becomes_occupied() {
+        SeatingArea seatingArea = new SeatingArea(List.of(
+                List.of('#', '.', '#', '.'),
+                List.of('.', '.', '.', '#'),
+                List.of('.', 'L', '.', '.'),
+                List.of('.', '.', '.', '#')
+        ));
+
+        SeatingArea ruleResult = seatingArea.applyRules(new VisibleOccupiedSeatCountingStrategy());
+
+        SeatingArea expectedResult = new SeatingArea(List.of(
+                List.of('#', '.', '#', '.'),
+                List.of('.', '.', '.', '#'),
+                List.of('.', '#', '.', '.'),
+                List.of('.', '.', '.', '#')
+        ));
+
+        assertEquals(expectedResult, ruleResult);
+    }
+
+    @Test
+    public void a_vacant_seat_with_a_visible_occupied_seat_remains_unoccupied() {
+        SeatingArea seatingArea = new SeatingArea(List.of(
+                List.of('#', '#', '#', '.'),
+                List.of('.', '.', '.', '#'),
+                List.of('.', 'L', '.', '.'),
+                List.of('.', '.', '.', '#')
+        ));
+
+        SeatingArea ruleResult = seatingArea.applyRules(new VisibleOccupiedSeatCountingStrategy());
+
+        SeatingArea expectedResult = new SeatingArea(List.of(
+                List.of('#', '#', '#', '.'),
+                List.of('.', '.', '.', '#'),
+                List.of('.', 'L', '.', '.'),
+                List.of('.', '.', '.', '#')
+        ));
+
+        assertEquals(expectedResult, ruleResult);
+    }
+
+    @Test
+    public void an_occupied_seat_surrounded_by_four_visible_occupied_seats_remains_occupied() {
+        SeatingArea seatingArea = new SeatingArea(List.of(
+                List.of('.', '#', '.', '#'),
+                List.of('#', '.', '.', '.'),
+                List.of('.', '#', '.', '.'),
+                List.of('.', '#', '.', '.')
+        ));
+
+        SeatingArea ruleResult = seatingArea.applyRules(new VisibleOccupiedSeatCountingStrategy());
+
+        SeatingArea expectedResult = new SeatingArea(List.of(
+                List.of('.', '#', '.', '#'),
+                List.of('#', '.', '.', '.'),
+                List.of('.', '#', '.', '.'),
+                List.of('.', '#', '.', '.')
+        ));
+
+        assertEquals(expectedResult, ruleResult);
+    }
 }

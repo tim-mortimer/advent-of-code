@@ -11,7 +11,7 @@ public class SeatingSystem {
         BufferedReader bufferedReader = new BufferedReader(reader);
         String line;
 
-        List<List<Character>> seatingArea = new ArrayList<>();
+        List<List<Character>> seatingGrid = new ArrayList<>();
 
         while ((line = bufferedReader.readLine()) != null) {
             List<Character> row = new ArrayList<>();
@@ -20,14 +20,24 @@ public class SeatingSystem {
                 row.add(c);
             }
 
-            seatingArea.add(row);
+            seatingGrid.add(row);
         }
 
-        SeatingArea currentSeatingArea = new SeatingArea(seatingArea);
+        SeatingArea seatingArea = new SeatingArea(seatingGrid);
+
+        SeatingArea adjacentStrategyStableSeatingArea = findStableSeatingArrangement(seatingArea, new AdjacentOccupiedSeatCountingStrategy());
+        System.out.println(adjacentStrategyStableSeatingArea.occupiedSeatCount());
+
+        SeatingArea visibleStrategyStableSeatingArea = findStableSeatingArrangement(seatingArea, new VisibleOccupiedSeatCountingStrategy());
+        System.out.println(visibleStrategyStableSeatingArea.occupiedSeatCount());
+    }
+
+    private static SeatingArea findStableSeatingArrangement(SeatingArea seatingArea, OccupiedSeatCountingStrategy occupiedSeatCountingStrategy) {
+        SeatingArea currentSeatingArea = seatingArea;
         boolean match = false;
 
         while (!match) {
-            SeatingArea nextSeatingArea = currentSeatingArea.applyRules(new AdjacentOccupiedSeatCountingStrategy());
+            SeatingArea nextSeatingArea = currentSeatingArea.applyRules(occupiedSeatCountingStrategy);
 
             if (nextSeatingArea.equals(currentSeatingArea)) {
                 match = true;
@@ -36,6 +46,6 @@ public class SeatingSystem {
             currentSeatingArea = nextSeatingArea;
         }
 
-        System.out.println(currentSeatingArea.occupiedSeatCount());
+        return currentSeatingArea;
     }
 }

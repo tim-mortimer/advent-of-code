@@ -5,17 +5,17 @@ import java.util.List;
 public class AdjacentOccupiedSeatCountingStrategy implements OccupiedSeatCountingStrategy {
 
     @Override
-    public int count(List<List<Character>> seatingGrid, int i, int j) {
+    public int count(List<List<Character>> seatingGrid, int rowNumber, int columnNumber) {
         int adjacentOccupiedSeatCount = 0;
-        List<Character> row = seatingGrid.get(i);
+        List<Character> row = seatingGrid.get(rowNumber);
 
-        for (int k = i - 1; k < i + 2; k++) {
+        for (int k = rowNumber - 1; k < rowNumber + 2; k++) {
             if (k < 0 || k > seatingGrid.size() - 1) {
                 continue;
             }
 
-            for (int l = j - 1; l < j + 2; l++) {
-                if (l < 0 || l > row.size() - 1 || (k == i && l == j)) {
+            for (int l = columnNumber - 1; l < columnNumber + 2; l++) {
+                if (l < 0 || l > row.size() - 1 || (k == rowNumber && l == columnNumber)) {
                     continue;
                 }
 
@@ -26,5 +26,10 @@ public class AdjacentOccupiedSeatCountingStrategy implements OccupiedSeatCountin
         }
 
         return adjacentOccupiedSeatCount;
+    }
+
+    @Override
+    public int peopleTolerance() {
+        return 4;
     }
 }
