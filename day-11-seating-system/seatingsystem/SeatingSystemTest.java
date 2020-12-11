@@ -199,6 +199,8 @@ public class SeatingSystemTest {
                 List.of('L', '.', '#'),
                 List.of('#', '#', '#')
         ));
+
+        assertEquals(expectedResult, ruleResult);
     }
 
     @Test
