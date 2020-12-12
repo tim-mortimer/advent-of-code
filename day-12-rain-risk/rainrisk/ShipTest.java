@@ -184,4 +184,11 @@ public class ShipTest {
         int manhattanDistance = ship.manhattanDistance();
         assertEquals(40 + 50, manhattanDistance);
     }
+
+    @Test
+    public void following_a_waypoint() {
+        Ship ship = new Ship(0, 0, 0);
+        Waypoint waypoint = new Waypoint(10, 1);
+        assertEquals(new Ship(0, 100, 10), ship.followWaypoint(waypoint, 10));
+    }
 }

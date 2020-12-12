@@ -42,5 +42,28 @@ public class RainRisk {
         }
 
         System.out.println(ship.manhattanDistance());
+
+        ship = new Ship();
+        Waypoint waypoint = new Waypoint();
+
+        for (Map<Character, Integer> instruction: navigationInstructions) {
+            if (instruction.containsKey('N')) {
+                waypoint = waypoint.moveNorth(instruction.get('N'));
+            } else if (instruction.containsKey('S')) {
+                waypoint = waypoint.moveSouth(instruction.get('S'));
+            } else if (instruction.containsKey('E')) {
+                waypoint = waypoint.moveEast(instruction.get('E'));
+            } else if (instruction.containsKey('W')) {
+                waypoint = waypoint.moveWest(instruction.get('W'));
+            } else if (instruction.containsKey('L')) {
+                waypoint = waypoint.rotateAnticlocwise(instruction.get('L'));
+            } else if (instruction.containsKey('R')) {
+                waypoint = waypoint.rotateClockwise(instruction.get('R'));
+            } else if (instruction.containsKey('F')){
+                ship = ship.followWaypoint(waypoint, instruction.get('F'));
+            }
+        }
+
+        System.out.println(ship.manhattanDistance());
     }
 }

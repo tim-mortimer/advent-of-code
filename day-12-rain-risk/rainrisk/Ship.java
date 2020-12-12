@@ -22,11 +22,11 @@ public class Ship {
     }
 
     public int xPosition() {
-        return 0;
+        return xPosition;
     }
 
     public int yPosition() {
-        return 0;
+        return yPosition;
     }
 
     public Ship moveNorth(int distance) {
@@ -89,5 +89,11 @@ public class Ship {
                 ", xPosition=" + xPosition +
                 ", yPosition=" + yPosition +
                 '}';
+    }
+
+    public Ship followWaypoint(Waypoint waypoint, int times) {
+        int newXPosition = xPosition + times * waypoint.xValue();
+        int newYPosition = yPosition + times * waypoint.yValue();
+        return new Ship(orientation, newXPosition, newYPosition);
     }
 }
