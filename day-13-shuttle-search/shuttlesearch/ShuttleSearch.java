@@ -50,15 +50,9 @@ public class ShuttleSearch {
             }
 
             int index = busIds.indexOf(busId);
-
             moduli.add((long) busId);
-
-            if (index == 0) {
-                remainders.add(0L);
-            } else {
-                long remainder = busId - index;
-                remainders.add(remainder);
-            }
+            long remainder = busId - index;
+            remainders.add(remainder);
         }
 
         for (long nI : moduli) {
@@ -81,7 +75,7 @@ public class ShuttleSearch {
 
             inverses.add(inverse);
         }
-        
+
         long x = 0;
 
         for (int i = 0; i < remainders.size(); i++) {
