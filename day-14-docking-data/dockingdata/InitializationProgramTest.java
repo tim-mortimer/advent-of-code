@@ -21,8 +21,8 @@ public class InitializationProgramTest {
         Map<Integer, Long> output = program.execute(instructions);
 
         assertEquals(Map.of(
-                7, 101,
-                8, 64
+                7, 101L,
+                8, 64L
         ), output);
     }
 }
