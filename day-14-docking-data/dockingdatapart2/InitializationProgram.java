@@ -56,7 +56,7 @@ public class InitializationProgram {
                     }
                 }
 
-                long combinations = (long) Math.pow(2, xCount);
+                int combinations = (int) Math.pow(2, xCount);
 
                 for (int i = 0; i < combinations; i++) {
                     String binaryString = Integer.toBinaryString(i);
