@@ -13,7 +13,6 @@ public class RecitationGame {
     }
 
     public int playUntil(int round) {
-        ArrayList<Integer> results = new ArrayList<>();
         Map<Integer, List<Integer>> locationCache = new HashMap<>();
         int result = -1;
 
