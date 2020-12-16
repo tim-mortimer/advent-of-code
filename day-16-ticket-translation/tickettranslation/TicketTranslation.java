@@ -33,15 +33,11 @@ public class TicketTranslation {
             fieldValidationRules.put(field, validationRules);
         }
 
-        System.out.println(fieldValidationRules);
-
         bufferedReader.readLine();
 
-        List<Integer> yourTickets = Arrays.stream(bufferedReader.readLine().split(","))
+        List<Integer> yourTicket = Arrays.stream(bufferedReader.readLine().split(","))
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
-
-        System.out.println(yourTickets);
 
         bufferedReader.readLine();
         bufferedReader.readLine();
@@ -56,29 +52,114 @@ public class TicketTranslation {
             nearbyTickets.add(nearbyTicket);
         }
 
-        System.out.println(nearbyTickets);
-
         long errorRate = 0;
+        List<List<Integer>> validTickets = new ArrayList<>();
 
         for (List<Integer> nearbyTicket: nearbyTickets) {
-            for (int fieldValue: nearbyTicket) {
-                boolean isValid = false;
+            boolean ticketIsValid = true;
 
-                for (List<List<Integer>> rules: fieldValidationRules.values()) {
-                    for (List<Integer> rule: rules) {
+            for (Integer fieldValue : nearbyTicket) {
+                boolean fieldValueIsValid = false;
+
+                for (String field : fieldValidationRules.keySet()) {
+                    List<List<Integer>> rules = fieldValidationRules.get(field);
+
+                    for (List<Integer> rule : rules) {
                         if (fieldValue >= rule.get(0) && fieldValue <= rule.get(1)) {
-                            isValid = true;
+                            fieldValueIsValid = true;
                             break;
                         }
                     }
                 }
 
-                if (!isValid) {
+                if (!fieldValueIsValid) {
+                    ticketIsValid = false;
                     errorRate += fieldValue;
                 }
+            }
+
+            if (ticketIsValid) {
+                validTickets.add(nearbyTicket);
             }
         }
 
         System.out.println(errorRate);
+
+        List<Map<String, List<Integer>>> validTicketFieldIndices = new ArrayList<>();
+
+        for (List<Integer> validTicket: validTickets) {
+            Map<String, List<Integer>> validFieldIndices = new HashMap<>();
+
+            for (int i = 0; i < validTicket.size(); i++) {
+                int value = validTicket.get(i);
+
+                for (String field: fieldValidationRules.keySet()) {
+                    List<List<Integer>> rules = fieldValidationRules.get(field);
+                    List<Integer> validIndices = new ArrayList<>();
+
+                    if (validFieldIndices.containsKey(field)) {
+                        validIndices = validFieldIndices.get(field);
+                    }
+
+                    for (List<Integer> rule: rules) {
+                        if (value >= rule.get(0) && value <= rule.get(1)) {
+                            validIndices.add(i);
+                            break;
+                        }
+                    }
+
+                    validFieldIndices.put(field, validIndices);
+                }
+            }
+
+            validTicketFieldIndices.add(validFieldIndices);
+        }
+
+        Map<String, List<Integer>> reducedValidFieldIndices = validTicketFieldIndices.get(0);
+
+        for (Map<String, List<Integer>> validFieldIndices: validTicketFieldIndices) {
+            for (String field: validFieldIndices.keySet()) {
+                List<Integer> previousValidFieldIndices = reducedValidFieldIndices.get(field);
+                List<Integer> currentValidFieldIndices = validFieldIndices.get(field);
+
+                List<Integer> intersectionOfFieldIndices = previousValidFieldIndices.stream()
+                        .filter(currentValidFieldIndices::contains)
+                        .collect(Collectors.toList());
+
+                reducedValidFieldIndices.put(field, intersectionOfFieldIndices);
+            }
+        }
+
+        Map<String, Integer> fieldIndices = new HashMap<>();
+
+        while (fieldIndices.keySet().size() < reducedValidFieldIndices.keySet().size()) {
+            for (String field: reducedValidFieldIndices.keySet()) {
+                List<Integer> validIndices = reducedValidFieldIndices.get(field);
+
+                if (validIndices.size() != 1) {
+                    continue;
+                }
+
+                int index = validIndices.get(0);
+                fieldIndices.put(field, index);
+
+                reducedValidFieldIndices.replaceAll(
+                        (f, v) -> reducedValidFieldIndices.get(f)
+                                .stream()
+                                .filter(currentIndex -> currentIndex != index)
+                                .collect(Collectors.toList())
+                );
+            }
+        }
+
+        long result = 1;
+
+        for (String field: fieldIndices.keySet()) {
+            if (field.startsWith("departure")) {
+                result *= yourTicket.get(fieldIndices.get(field));
+            }
+        }
+
+        System.out.println(result);
     }
 }
