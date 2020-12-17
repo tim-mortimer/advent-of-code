@@ -11,9 +11,9 @@ public class PocketDimension {
     }
 
     public PocketDimension(PocketDimension expandedPocketDimension) {
-        int wSize = expandedPocketDimension.grid().size();
-        int zSize = expandedPocketDimension.grid().get(0).size();
-        int xySize = expandedPocketDimension.grid().get(0).get(0).size();
+        int wSize = expandedPocketDimension.wSize();
+        int zSize = expandedPocketDimension.zSize();
+        int xySize = expandedPocketDimension.xySize();
 
         List<List<List<List<Character>>>> newGrid = new ArrayList<>();
 
@@ -42,24 +42,47 @@ public class PocketDimension {
         grid = newGrid;
     }
 
-    public char get(int x, int y, int z, int w) {
-        return grid.get(w).get(z).get(y).get(x);
+    public PocketDimension performCycle() {
+        PocketDimension expandedPocketDimension = this.expand();
+        PocketDimension result = new PocketDimension(expandedPocketDimension);
+
+        for (int w = 0; w < expandedPocketDimension.wSize(); w++) {
+            for (int z = 0; z < expandedPocketDimension.zSize(); z++) {
+                for (int y = 0; y < expandedPocketDimension.xySize(); y++) {
+                    for (int x = 0; x < expandedPocketDimension.xySize(); x++) {
+                        int activeNeighbourCount = expandedPocketDimension.countActiveNeighbours(x, y, z, w);
+
+                        if (expandedPocketDimension.get(x, y, z, w) == '#') {
+                            boolean hasTwoOrThreeActiveNeighbours = activeNeighbourCount == 2 || activeNeighbourCount == 3;
+                            if (!hasTwoOrThreeActiveNeighbours) {
+                                result.set(x, y, z, w, '.');
+                            }
+                        } else {
+                            if (activeNeighbourCount == 3) {
+                                result.set(x, y, z, w, '#');
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     public PocketDimension expand() {
         List<List<List<List<Character>>>> newGrid = new ArrayList<>();
 
-        newGrid.add(createInactiveWPlane(grid.get(0).size() + 2, grid.get(0).get(0).size() + 2));
+        newGrid.add(createInactiveWPlane(zSize() + 2, xySize() + 2));
 
         for (List<List<List<Character>>> wPlane: grid) {
             newGrid.add(expandWPlane(wPlane));
         }
 
-        newGrid.add(createInactiveWPlane(grid.get(0).size() + 2, grid.get(0).get(0).size() + 2));
+        newGrid.add(createInactiveWPlane(zSize() + 2, xySize() + 2));
 
         return new PocketDimension(newGrid);
     }
-
 
     public List<List<List<Character>>> expandWPlane(List<List<List<Character>>> wPlane) {
         List<List<List<Character>>> newWPlane = new ArrayList<>();
@@ -123,43 +146,8 @@ public class PocketDimension {
         return inactiveList;
     }
 
-    public PocketDimension performCycle() {
-        PocketDimension expandedPocketDimension = this.expand();
-        int wSize = expandedPocketDimension.grid().size();
-        int zSize = expandedPocketDimension.grid().get(0).size();
-        int xySize = expandedPocketDimension.grid().get(0).get(0).size();
-
-        PocketDimension result = new PocketDimension(expandedPocketDimension);
-
-        for (int w = 0; w < wSize; w++) {
-            for (int z = 0; z < zSize; z++) {
-                for (int y = 0; y < xySize; y++) {
-                    for (int x = 0; x < xySize; x++) {
-                        int activeNeighbourCount = expandedPocketDimension.countActiveNeighbours(x, y, z, w);
-
-                        if (expandedPocketDimension.get(x, y, z, w) == '#') {
-                            boolean hasTwoOrThreeActiveNeighbours = activeNeighbourCount == 2 || activeNeighbourCount == 3;
-                            if (!hasTwoOrThreeActiveNeighbours) {
-                                result.set(x, y, z, w, '.');
-                            }
-                        } else {
-                            if (activeNeighbourCount == 3) {
-                                result.set(x, y, z, w, '#');
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
     private int countActiveNeighbours(int x, int y, int z, int w) {
         int activeNeighbourCount = 0;
-        int wSize = grid.size();
-        int zSize = grid.get(0).size();
-        int xySize = grid.get(0).get(0).size();
 
         for (int wDelta = -1; wDelta <= 1; wDelta++) {
             for (int zDelta = -1; zDelta <= 1; zDelta++) {
@@ -174,10 +162,10 @@ public class PocketDimension {
                         int inspectedY = y + yDelta;
                         int inspectedX = x + xDelta;
 
-                        boolean inspectedWIsOutsideGrid = inspectedW < 0 || inspectedW >= wSize;
-                        boolean inspectedZIsOutsideGrid = inspectedZ < 0 || inspectedZ >= zSize;
-                        boolean inspectedYIsOutsideGrid = inspectedY < 0 || inspectedY >= xySize;
-                        boolean inspectedXIsOutsideGrid = inspectedX < 0 || inspectedX >= xySize;
+                        boolean inspectedWIsOutsideGrid = inspectedW < 0 || inspectedW >= wSize();
+                        boolean inspectedZIsOutsideGrid = inspectedZ < 0 || inspectedZ >= zSize();
+                        boolean inspectedYIsOutsideGrid = inspectedY < 0 || inspectedY >= xySize();
+                        boolean inspectedXIsOutsideGrid = inspectedX < 0 || inspectedX >= xySize();
 
                         if (inspectedWIsOutsideGrid || inspectedZIsOutsideGrid || inspectedYIsOutsideGrid || inspectedXIsOutsideGrid) {
                             continue;
@@ -202,15 +190,12 @@ public class PocketDimension {
     }
 
     public int activeCubeCount() {
-        int wSize = grid.size();
-        int zSize = grid.get(0).size();
-        int xySize = grid.get(0).get(0).size();
         int activeCubeCount = 0;
 
-        for (int w = 0; w < wSize; w++) {
-            for (int z = 0; z < zSize; z++) {
-                for (int y = 0; y < xySize; y++) {
-                    for (int x = 0; x < xySize; x++) {
+        for (int w = 0; w < wSize(); w++) {
+            for (int z = 0; z < zSize(); z++) {
+                for (int y = 0; y < xySize(); y++) {
+                    for (int x = 0; x < xySize(); x++) {
                         if (get(x, y, z, w) == '#') {
                             activeCubeCount++;
                         }
@@ -222,8 +207,21 @@ public class PocketDimension {
         return activeCubeCount;
     }
 
-    private List<List<List<List<Character>>>> grid() {
-        return grid;
+
+    public char get(int x, int y, int z, int w) {
+        return grid.get(w).get(z).get(y).get(x);
+    }
+
+    private int wSize() {
+        return grid.size();
+    }
+
+    private int zSize() {
+        return grid.get(0).size();
+    }
+
+    private int xySize() {
+        return grid.get(0).get(0).size();
     }
 
     @Override
