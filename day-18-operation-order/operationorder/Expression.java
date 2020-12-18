@@ -5,7 +5,6 @@ import java.util.regex.Pattern;
 
 public class Expression {
     public static long evaluate(String expression) {
-        System.out.println("Start expression: " + expression);
         Pattern parenthesisPattern = Pattern.compile("\\(([^\\()]+)\\)");
         Matcher parenthesisMatcher = parenthesisPattern.matcher(expression);
 
