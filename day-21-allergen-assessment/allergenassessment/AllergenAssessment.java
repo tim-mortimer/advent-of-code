@@ -35,16 +35,12 @@ public class AllergenAssessment {
 
             foods.add(food);
         }
-
-        System.out.println(foods);
-
+        
         List<String> allergens = foods.stream()
                 .map(food -> food.getOrDefault("allergens", List.of()))
                 .flatMap(Collection::stream)
                 .distinct()
                 .collect(Collectors.toList());
-
-        System.out.println(allergens);
 
         Map<String, List<String>> allergensToPotentialIngredients = new HashMap<>();
 
@@ -70,8 +66,6 @@ public class AllergenAssessment {
             }
         });
 
-        System.out.println(allergensToPotentialIngredients);
-
         Map<String, String> allergensToIngredients = new HashMap<>();
 
         while (allergensToIngredients.size() < allergensToPotentialIngredients.size()) {
@@ -81,9 +75,6 @@ public class AllergenAssessment {
                     allergensToIngredients.put(allergen, ingredient);
 
                     allergensToPotentialIngredients.forEach((currentAllergen, currentPotentialIngredients) -> {
-                        System.out.println(currentPotentialIngredients);
-                        System.out.println(ingredient);
-
                         List<String> filteredPotentialIngredients = new ArrayList<>(currentPotentialIngredients);
                         filteredPotentialIngredients.remove(ingredient);
 
@@ -92,8 +83,6 @@ public class AllergenAssessment {
                 }
             });
         }
-
-        System.out.println(allergensToIngredients);
 
         Collection<String> ingredientsContainingAllergens = allergensToIngredients.values();
 
@@ -104,5 +93,13 @@ public class AllergenAssessment {
                 .count();
 
         System.out.println(nonAllergenContainingIngredientInclusionCount);
+
+        String ingredientsString = allergensToIngredients.keySet()
+                .stream()
+                .sorted()
+                .map(allergensToIngredients::get)
+                .collect(Collectors.joining(","));
+
+        System.out.println(ingredientsString);
     }
 }
